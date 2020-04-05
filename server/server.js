@@ -16,11 +16,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
 
+app.get("/", (req, res) => {
+  res.status(200).send("Welcome!");
+});
+
 app.get("*", (req, res) => {
   res.status(404).send("404 Error: Page Not Found!");
 });
 
-app.listen(process.env.PORT || 3000, process.env.HOST || "0.0.0.0", () => {
+app.listen(process.env.PORT || 3001, process.env.HOST || "0.0.0.0", () => {
   console.log(
     connected(
       `App listening on port ${process.env.PORT || 3000} in ${

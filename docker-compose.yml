@@ -1,0 +1,62 @@
+version: "3.7"
+
+networks:
+  puzzle-network:
+    driver: bridge
+
+services:
+  mongodb:
+    container_name: mongo
+    image: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABSE: puzzle
+    labels:
+      NAME: "mongodb"
+    networks:
+      - puzzle-network
+    ports:
+      - target: 27017
+        published: 27017
+        protocol: tcp
+        mode: bridge
+
+  client:
+    container_name: client
+    restart: unless-stopped
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    depends_on:
+      - server
+    labels:
+      NAME: "webapp"
+    networks:
+      - puzzle-network
+    ports:
+      - target: 3000
+        published: 3000
+        protocol: tcp
+        mode: bridge
+
+  server:
+    container_name: server
+    restart: unless-stopped
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    env_file:
+      - ./server/.env
+    depends_on:
+      - mongodb
+    labels:
+      NAME: "server"
+    networks:
+      - puzzle-network
+    ports:
+      - target: 3001
+        published: 3001
+        protocol: tcp
+        mode: bridge
